@@ -50,4 +50,4 @@ The agent executes a sophisticated **Search-Verify-Report** loop:
     ```
 
 ## ⚠️ Disclaimer
-This project is a proof-of-concept developed for the **Agent AI** course completion (Dec 2025). It is intended for educational and portfolio demonstration purposes only.
+This project is a proof-of-concept developed for the **Agentic AI** course completion (Dec 2025). It is intended for educational and portfolio demonstration purposes only.
