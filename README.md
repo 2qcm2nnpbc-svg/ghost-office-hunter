@@ -1,5 +1,7 @@
 # 👻 Ghost Office Hunter (AI Compliance Agent)
 
+https://github.com/user-attachments/assets/e0694b7b-e82c-4159-9c52-4b6689b6b7c8
+
 ## 🚀 Project Overview
 An autonomous AI Agent designed to detect "Ghost Offices" and shell companies in Singapore. Built using **CrewAI** and **Python**, this tool automates the forensic investigation process often used in AML (Anti-Money Laundering) compliance.
 
