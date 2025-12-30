@@ -1,0 +1,4 @@
+crewai==1.7.2
+crewai-tools==1.7.2
+ddgs==9.10.0
+python-dotenv==1.1.1
