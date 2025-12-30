@@ -3,10 +3,8 @@ from dotenv import load_dotenv
 from crewai import Crew, Process
 from agents import registry_researcher_agent
 from tasks import investigation_task
-
-# --- THE FIX: Import BaseTool from the CORE library ---
 from crewai.tools import BaseTool 
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 
 load_dotenv()
 

@@ -10,6 +10,5 @@ def registry_researcher_agent():
         You scrutinize corporate registry data for red flags.""",
         verbose=True,
         allow_delegation=False,
-        # We will add tools in main.py to keep this clean
         tools=[] 
     )
