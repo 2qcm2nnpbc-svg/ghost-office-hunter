@@ -5,6 +5,16 @@
 [![Field: AML/KYC](https://img.shields.io/badge/Field-Compliance%20/%20AML-green.svg)](https://en.wikipedia.org/wiki/Anti-money_laundering)
 
 ## 📺 Demo
+
+Version 2:Enhancement - 10 Jan 2026
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/a394e970-0a26-45df-bc48-09c4deab9c0b" width="100%" controls muted autoplay>
+    Your browser does not support the video tag.
+  </video>
+</p>
+
+
+Version 1: 
 <p align="center">
   <video src="https://github.com/user-attachments/assets/de746eae-35a6-493a-960a-5724a1322ee6" width="100%" controls muted autoplay>
     Your browser does not support the video tag.
