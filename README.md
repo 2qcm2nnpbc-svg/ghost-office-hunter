@@ -3,6 +3,7 @@
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org)
 [![Framework: CrewAI](https://img.shields.io/badge/Framework-CrewAI-red.svg)](https://crewai.com)
 [![Field: AML/KYC](https://img.shields.io/badge/Field-Compliance%20/%20AML-green.svg)](https://en.wikipedia.org/wiki/Anti-money_laundering)
+[![Certification: Agentic AI](https://img.shields.io/badge/Certification-Reinvention%20with%20Agentic%20AI-blueviolet.svg)](https://www.credly.com/badges/5cc6097d-a216-42a4-8a26-793f1f8c0e40/public_url)
 
 ## 📺 Demo
 
