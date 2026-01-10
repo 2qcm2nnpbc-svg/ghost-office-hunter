@@ -6,7 +6,7 @@
 
 ## 📺 Demo
 
-Version 2:Enhancement - 10 Jan 2026
+Version 2: Enhancement - 10 Jan 2026
 <p align="center">
   <video src="https://github.com/user-attachments/assets/a394e970-0a26-45df-bc48-09c4deab9c0b" width="100%" controls muted autoplay>
     Your browser does not support the video tag.
