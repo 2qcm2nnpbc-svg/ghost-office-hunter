@@ -1,4 +1,9 @@
+# Core dependencies
 crewai==1.7.2
 crewai-tools==1.7.2
 ddgs==9.10.0
 python-dotenv==1.1.1
+streamlit==1.31.0
+
+# Note: OpenAI API key is required via environment variable
+# The CrewAI framework uses OpenAI models by default
