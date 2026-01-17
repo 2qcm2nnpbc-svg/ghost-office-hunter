@@ -1,6 +1,6 @@
 # 🚀 Quick Start Guide
 
-Get up and running with Ghost Office Hunter in under 5 minutes!
+Run Ghost Office Hunter in under 5 minutes!
 
 ## Prerequisites
 

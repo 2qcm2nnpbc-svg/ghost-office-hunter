@@ -3,8 +3,19 @@
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org)
 [![Framework: CrewAI](https://img.shields.io/badge/Framework-CrewAI-red.svg)](https://crewai.com)
 [![Field: AML/KYC](https://img.shields.io/badge/Field-Compliance%20/%20AML-green.svg)](https://en.wikipedia.org/wiki/Anti-money_laundering)
+[![Certification: Agentic AI](https://img.shields.io/badge/Certification-Reinvention%20with%20Agentic%20AI-blueviolet.svg)](https://www.credly.com/badges/5cc6097d-a216-42a4-8a26-793f1f8c0e40/public_url)
 
 ## 📺 Demo
+
+Version 2: Enhancement - 10 Jan 2026
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/a394e970-0a26-45df-bc48-09c4deab9c0b" width="100%" controls muted autoplay>
+    Your browser does not support the video tag.
+  </video>
+</p>
+
+
+Version 1: 
 <p align="center">
   <video src="https://github.com/user-attachments/assets/de746eae-35a6-493a-960a-5724a1322ee6" width="100%" controls muted autoplay>
     Your browser does not support the video tag.
