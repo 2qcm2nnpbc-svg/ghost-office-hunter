@@ -53,3 +53,6 @@ reports/
 # Logs
 *.log
 logs/
+
+# Streamlit
+.streamlit/

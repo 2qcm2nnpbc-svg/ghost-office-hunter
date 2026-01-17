@@ -5,6 +5,7 @@ import time
 
 from crewai.tools import BaseTool
 from ddgs import DDGS
+import yfinance as yf
 
 from config import Config
 from logger import setup_logger
@@ -125,3 +126,165 @@ class GhostHunterSearchTool(BaseTool):
             f"Technical constraints may include: DuckDuckGo rate limiting, network connectivity issues, "
             f"or service unavailability. Please try again later."
         )
+
+
+class ShariahComplianceTool(BaseTool):
+    """Tool for checking Shariah compliance of stocks using AAOIFI financial ratios."""
+    
+    name: str = "Shariah Compliance Checker"
+    description: str = (
+        "Checks a stock ticker symbol against AAOIFI Shariah compliance standards. "
+        "Evaluates debt ratio and cash ratio against the 33% threshold. "
+        "Returns PASS/FAIL status with detailed financial ratios. "
+        "Use this tool when you need to verify if a publicly traded company complies with Shariah principles."
+    )
+
+    def _run(self, ticker_symbol: str) -> str:
+        """
+        Check a stock against AAOIFI Shariah compliance standards.
+        
+        Args:
+            ticker_symbol: Stock ticker symbol (e.g., "WTS", "AAPL", "MSFT")
+            
+        Returns:
+            Formatted string with compliance status and financial ratios
+        """
+        try:
+            logger.info(f"Checking Shariah compliance for ticker: {ticker_symbol}")
+            
+            # Fetch stock data
+            stock = yf.Ticker(ticker_symbol)
+            info = stock.info
+            
+            # Extract financial data
+            market_cap = info.get('marketCap')
+            total_debt = info.get('totalDebt', 0)
+            total_cash = info.get('totalCash', 0)
+            
+            # Validate market cap
+            if not market_cap or market_cap == 0:
+                error_msg = f"Market Cap data missing or zero for {ticker_symbol}. This may indicate the ticker is invalid or the company is not publicly traded."
+                logger.warning(error_msg)
+                return error_msg
+            
+            # Calculate ratios
+            debt_ratio = (total_debt / market_cap) * 100 if market_cap > 0 else 0
+            cash_ratio = (total_cash / market_cap) * 100 if market_cap > 0 else 0
+            
+            # Apply AAOIFI thresholds (<33%)
+            debt_pass = debt_ratio < 33.0
+            cash_pass = cash_ratio < 33.0
+            overall_status = "PASS" if (debt_pass and cash_pass) else "FAIL"
+            
+            # Format results
+            result = {
+                "Ticker": ticker_symbol,
+                "Status": overall_status,
+                "Debt_Ratio": f"{debt_ratio:.2f}%",
+                "Debt_Threshold": "<33%",
+                "Debt_Pass": "✓" if debt_pass else "✗",
+                "Cash_Ratio": f"{cash_ratio:.2f}%",
+                "Cash_Threshold": "<33%",
+                "Cash_Pass": "✓" if cash_pass else "✗",
+                "Market_Cap": f"${market_cap:,.0f}"
+            }
+            
+            # Format output string
+            output_lines = [
+                f"=== Shariah Compliance Check for {ticker_symbol} ===",
+                f"Overall Status: {overall_status}",
+                "",
+                "Financial Ratios (AAOIFI Standards):",
+                f"  Debt Ratio: {result['Debt_Ratio']} (Threshold: {result['Debt_Threshold']}) {result['Debt_Pass']}",
+                f"  Cash Ratio: {result['Cash_Ratio']} (Threshold: {result['Cash_Threshold']}) {result['Cash_Pass']}",
+                "",
+                f"Market Capitalization: {result['Market_Cap']}",
+                "",
+                "Note: Both ratios must be below 33% to PASS Shariah compliance."
+            ]
+            
+            output = "\n".join(output_lines)
+            logger.info(f"Shariah compliance check completed for {ticker_symbol}: {overall_status}")
+            return output
+            
+        except Exception as e:
+            error_msg = f"Error checking Shariah compliance for {ticker_symbol}: {str(e)}. The ticker symbol may be invalid or financial data may not be available."
+            logger.error(error_msg, exc_info=True)
+            return error_msg
+
+
+class ShariahBusinessActivityTool(BaseTool):
+    """Tool for fetching and analyzing company business summary for Shariah compliance."""
+    
+    name: str = "Shariah Business Activity Analyzer"
+    description: str = (
+        "Fetches a company's business summary from financial data and provides it for analysis. "
+        "The business summary should be analyzed for prohibited activities such as alcohol, gambling, "
+        "pork products, adult entertainment, and interest-based income. "
+        "Use this tool to get the business description that needs to be checked against Shariah principles."
+    )
+
+    def _run(self, ticker_symbol: str) -> str:
+        """
+        Fetch business summary from yfinance for Shariah compliance analysis.
+        
+        Args:
+            ticker_symbol: Stock ticker symbol (e.g., "WTS", "AAPL", "MSFT")
+            
+        Returns:
+            Formatted string with business summary and company information
+        """
+        try:
+            logger.info(f"Fetching business summary for ticker: {ticker_symbol}")
+            
+            # Fetch stock data
+            stock = yf.Ticker(ticker_symbol)
+            info = stock.info
+            
+            # Extract business information
+            company_name = info.get('longName') or info.get('shortName', ticker_symbol)
+            business_summary = info.get('longBusinessSummary') or info.get('businessSummary', '')
+            industry = info.get('industry', 'N/A')
+            sector = info.get('sector', 'N/A')
+            
+            if not business_summary:
+                warning_msg = (
+                    f"Business summary not available for {ticker_symbol} ({company_name}). "
+                    f"This may indicate the company data is incomplete or the ticker is invalid."
+                )
+                logger.warning(warning_msg)
+                return warning_msg
+            
+            # Format output for LLM analysis
+            output_lines = [
+                f"=== Business Summary for {company_name} ({ticker_symbol}) ===",
+                "",
+                f"Industry: {industry}",
+                f"Sector: {sector}",
+                "",
+                "Business Summary:",
+                business_summary,
+                "",
+                "=== Analysis Required ===",
+                "Please analyze this business summary for Shariah compliance. Look for:",
+                "- Alcohol-related activities (brewing, distilling, wine, spirits, etc.)",
+                "- Gambling activities (casinos, betting, lottery, gaming, etc.)",
+                "- Pork products (pork, bacon, ham, etc.)",
+                "- Adult entertainment (pornography, adult content, etc.)",
+                "- Interest-based income (riba, usury, conventional banking interest, etc.)",
+                "- Other prohibited activities according to Islamic principles",
+                "",
+                "Flag the company as NON-COMPLIANT if any prohibited activities are found in the business description."
+            ]
+            
+            output = "\n".join(output_lines)
+            logger.info(f"Business summary fetched for {ticker_symbol}")
+            return output
+            
+        except Exception as e:
+            error_msg = (
+                f"Error fetching business summary for {ticker_symbol}: {str(e)}. "
+                f"The ticker symbol may be invalid or business data may not be available."
+            )
+            logger.error(error_msg, exc_info=True)
+            return error_msg

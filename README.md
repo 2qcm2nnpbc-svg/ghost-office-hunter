@@ -33,6 +33,7 @@ The agent executes a sophisticated **Search-Verify-Report** loop:
 1.  **Physical Presence Audit:** Differentiates between legitimate operational headquarters and "virtual office" hubs or high-density co-working spaces.
 2.  **Entity Clustering:** Identifies "Red Flag" patterns where dozens of unrelated entities are registered to a single, unmanned unit.
 3.  **Adverse Media Intelligence:** Performs deep-web scans for regulatory actions, bankruptcy filings, and leadership sanctions (e.g., the **Three Arrows Capital** forensic case study shown in the demo).
+4.  **Shariah Compliance Check:** Evaluates publicly traded companies against AAOIFI (Accounting and Auditing Organization for Islamic Financial Institutions) standards by checking debt and cash ratios against the 33% threshold requirement.
 
 ## 📥 Installation & Usage
 
@@ -105,6 +106,7 @@ streamlit run app.py
 Then open your browser to `http://localhost:8501` and use the interactive UI to:
 - Enter company names
 - Configure search settings
+- Enable Shariah compliance checks (optional)
 - View and download reports
 - Monitor investigation progress
 
@@ -123,6 +125,11 @@ python main.py "Company Name" --output custom_report.md
 **With verbose logging:**
 ```bash
 python main.py "Company Name" --verbose
+```
+
+**With Shariah compliance check:**
+```bash
+python main.py "Company Name" --shariah --ticker WTS
 ```
 
 **Get help:**
@@ -158,6 +165,82 @@ OUTPUT_DIR=reports
 ### Output
 
 Reports are saved to the `reports/` directory by default (configurable via `OUTPUT_DIR` environment variable). Each report is named `{Company_Name}_Forensic_Report.md`.
+
+## 🕌 Shariah Compliance Feature
+
+The Shariah compliance check evaluates publicly traded companies against **AAOIFI (Accounting and Auditing Organization for Islamic Financial Institutions)** standards using both financial ratios and business activity analysis.
+
+### How It Works
+
+The tool performs two comprehensive checks:
+
+#### 1. Financial Ratios Check (AAOIFI Standards)
+
+Checks two key financial ratios:
+
+1. **Debt Ratio**: Total debt as a percentage of market capitalization
+2. **Cash Ratio**: Total cash as a percentage of market capitalization
+
+**Compliance Criteria:**
+- Both ratios must be **below 33%** to PASS financial compliance
+- If either ratio exceeds 33%, the company FAILS financial compliance
+
+#### 2. Business Activity Analysis (LLM-Powered)
+
+Uses an AI agent to analyze the company's business summary for prohibited activities:
+
+**Prohibited Activities Checked:**
+- 🍷 **Alcohol**: brewing, distilling, wine, spirits, beer, liquor, alcoholic beverages
+- 🎰 **Gambling**: casinos, betting, lottery, gaming, wagering, gambling operations
+- 🥓 **Pork Products**: pork, bacon, ham, pork-based products, swine products
+- 🔞 **Adult Entertainment**: pornography, adult content, adult entertainment services
+- 💰 **Interest-Based Income**: riba, usury, conventional banking interest, interest income
+- 🚬 **Tobacco**: cigarette manufacturing, tobacco products (if applicable)
+- 🔫 **Weapons**: arms manufacturing, weapons trade (if applicable)
+
+**Compliance Criteria:**
+- Company must **NOT engage in any prohibited activities** to PASS business activity compliance
+- If any prohibited activities are found, the company FAILS business activity compliance
+
+#### Overall Compliance Status
+
+For a company to be **Shariah-compliant**, it must:
+1. ✅ Pass financial ratios check (both debt and cash ratios < 33%)
+2. ✅ Pass business activity check (no prohibited activities)
+
+If either check fails, the company is **NON-COMPLIANT**.
+
+### Usage Examples
+
+**Command Line:**
+```bash
+# Check Shariah compliance for Watts Water Technologies
+python main.py "Watts Water Technologies" --shariah --ticker WTS
+```
+
+**Web UI:**
+1. Enter the company name
+2. Check "Include Shariah Compliance Check" in Advanced Options
+3. Enter the stock ticker symbol (e.g., WTS, AAPL, MSFT)
+4. Run the investigation
+
+### Data Source
+
+The tool uses `yfinance` to fetch real-time financial data from Yahoo Finance, including:
+- Market capitalization
+- Total debt
+- Total cash and cash equivalents
+- Business summary and company description
+
+**Note:** The ticker symbol must be valid and the company must be publicly traded for the Shariah compliance check to work.
+
+### AI-Powered Analysis
+
+The business activity analysis uses an **LLM (Large Language Model)** via CrewAI to:
+- Read and understand the company's business summary
+- Identify keywords and context related to prohibited activities
+- Provide intelligent analysis beyond simple keyword matching
+- Flag companies even if prohibited activities are mentioned indirectly
 
 ## 🏗️ Project Structure
 

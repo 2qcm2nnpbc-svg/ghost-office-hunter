@@ -7,9 +7,9 @@ from typing import Optional
 
 from crewai import Crew, Process
 
-from agents import registry_researcher_agent
-from tasks import investigation_task
-from tools import GhostHunterSearchTool
+from agents import registry_researcher_agent, shariah_compliance_agent
+from tasks import investigation_task, shariah_compliance_task
+from tools import GhostHunterSearchTool, ShariahComplianceTool, ShariahBusinessActivityTool
 from config import Config
 from logger import setup_logger
 
@@ -17,13 +17,20 @@ from logger import setup_logger
 logger = setup_logger()
 
 
-def run_investigation(company_name: str, output_path: Optional[str] = None) -> str:
+def run_investigation(
+    company_name: str, 
+    output_path: Optional[str] = None,
+    include_shariah: bool = False,
+    ticker_symbol: Optional[str] = None
+) -> str:
     """
     Run a forensic investigation on a company.
     
     Args:
         company_name: Name of the company to investigate
         output_path: Optional custom path for output file
+        include_shariah: Whether to include Shariah compliance check
+        ticker_symbol: Optional stock ticker symbol for Shariah compliance check
         
     Returns:
         Path to the generated report file
@@ -43,18 +50,32 @@ def run_investigation(company_name: str, output_path: Optional[str] = None) -> s
         search_tool = GhostHunterSearchTool()
         logger.debug("Search tool initialized")
         
-        # Setup agent
-        investigator = registry_researcher_agent(tools=[search_tool], verbose=True)
-        logger.debug("Investigator agent created")
+        # Setup agents and tasks
+        agents = []
+        tasks = []
         
-        # Create task
-        task = investigation_task(investigator, company_name)
-        logger.debug("Investigation task created")
+        # Main investigation agent and task
+        investigator = registry_researcher_agent(tools=[search_tool], verbose=True)
+        agents.append(investigator)
+        tasks.append(investigation_task(investigator, company_name))
+        logger.debug("Investigator agent and task created")
+        
+        # Shariah compliance agent and task (if requested)
+        if include_shariah:
+            shariah_tool = ShariahComplianceTool()
+            business_activity_tool = ShariahBusinessActivityTool()
+            shariah_analyst = shariah_compliance_agent(
+                tools=[shariah_tool, business_activity_tool, search_tool], 
+                verbose=True
+            )
+            agents.append(shariah_analyst)
+            tasks.append(shariah_compliance_task(shariah_analyst, company_name, ticker_symbol))
+            logger.debug("Shariah compliance agent and task created")
         
         # Assemble crew
         crew = Crew(
-            agents=[investigator],
-            tasks=[task],
+            agents=agents,
+            tasks=tasks,
             verbose=True,
             process=Process.sequential
         )
@@ -115,6 +136,19 @@ Examples:
         help="Enable verbose logging"
     )
     
+    parser.add_argument(
+        "--shariah", "-s",
+        action="store_true",
+        help="Include Shariah compliance check (requires ticker symbol)"
+    )
+    
+    parser.add_argument(
+        "--ticker", "-t",
+        type=str,
+        default=None,
+        help="Stock ticker symbol for Shariah compliance check (e.g., WTS, AAPL)"
+    )
+    
     args = parser.parse_args()
     
     # Configure logging level
@@ -126,8 +160,18 @@ Examples:
         # Validate configuration
         Config.validate()
         
+        # Validate Shariah compliance arguments
+        if args.shariah and not args.ticker:
+            logger.warning("Shariah compliance requested but no ticker symbol provided. Proceeding without Shariah check.")
+            args.shariah = False
+        
         # Run investigation
-        output_file = run_investigation(args.company, args.output)
+        output_file = run_investigation(
+            args.company, 
+            args.output,
+            include_shariah=args.shariah,
+            ticker_symbol=args.ticker
+        )
         
         # Print success message
         print("\n" + "=" * 60)

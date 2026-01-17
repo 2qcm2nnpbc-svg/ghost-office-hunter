@@ -106,6 +106,7 @@ def main():
         - 🔍 Adverse Media Check
         - 🏢 Ghost Office Detection
         - 📋 Corporate Structure Analysis
+        - 🕌 Shariah Compliance Check (Optional)
         - 📄 Automated Report Generation
         """)
         
@@ -144,6 +145,25 @@ def main():
                 value=False,
                 help="Enable detailed logging output"
             )
+            
+            st.divider()
+            
+            # Shariah compliance options
+            st.subheader("🕌 Shariah Compliance Check")
+            include_shariah = st.checkbox(
+                "Include Shariah Compliance Check",
+                value=False,
+                help="Check company against AAOIFI Shariah compliance standards"
+            )
+            
+            ticker_symbol = None
+            if include_shariah:
+                ticker_symbol = st.text_input(
+                    "Stock Ticker Symbol",
+                    placeholder="e.g., WTS, AAPL, MSFT",
+                    help="Stock ticker symbol required for Shariah compliance check"
+                )
+                st.info("💡 Shariah compliance checks debt and cash ratios against 33% threshold using AAOIFI standards.")
     
     with col2:
         st.header("📋 Quick Info")
@@ -163,6 +183,11 @@ def main():
         3. **Corporate Structure**
         - Shell company indicators
         - Red flags
+        
+        4. **Shariah Compliance** (Optional)
+        - AAOIFI financial ratios
+        - Debt and cash ratio checks
+        - Compliance status
         """)
     
     # Run investigation button
@@ -219,7 +244,19 @@ def main():
                     
                     # Run investigation
                     output_path = custom_output.strip() if custom_output.strip() else None
-                    report_path = run_investigation(company_name.strip(), output_path)
+                    ticker = ticker_symbol.strip() if ticker_symbol and ticker_symbol.strip() else None
+                    
+                    # Validate Shariah compliance arguments
+                    shariah_enabled = include_shariah and ticker
+                    if include_shariah and not ticker:
+                        st.warning("⚠️ Shariah compliance requested but no ticker symbol provided. Proceeding without Shariah check.")
+                    
+                    report_path = run_investigation(
+                        company_name.strip(), 
+                        output_path,
+                        include_shariah=shariah_enabled,
+                        ticker_symbol=ticker
+                    )
                     
                     progress_bar.progress(80)
                     status_text.text("Generating report...")
